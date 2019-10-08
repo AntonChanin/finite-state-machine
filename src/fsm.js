@@ -1,12 +1,18 @@
-class FSM {
+var active = 'normal';
+var thisConfig = undefined;
+class FSM { 
     /**
      * Creates new FSM instance.
      * @param config
      */
-    constructor(config) {
-        var active = 'normal';
-    }
-
+    
+        constructor(config) {
+            //var active = 'normal';throw(Error)
+            thisConfig = config;
+            if (thisConfig == undefined) {
+                throw new Error;
+            }
+        } 
     /**
      * Returns active state.
      * @returns {String}
@@ -22,9 +28,13 @@ class FSM {
     changeState(state) {
         switch (state) {
             case 'busy': active = 'busy';
-            case 'sleeping': active ='sleeping';
+                break;
+            case 'sleeping': active = 'sleeping';
+                break;
             case 'normal': active = 'normal';
+                break;
             case 'hungry': active = 'hungry';
+                break;
             default: reset();
         }
     }
@@ -33,37 +43,46 @@ class FSM {
      * Changes state according to event transition rules.
      * @param event
      */
+                 
     trigger(event) {
+        let enveroupmentThis = this;
         if ( active == 'sleeping' ) {
             switch (event) {
-                case 'get_hungry': this.changeState('hungry');
-                case 'get_up': this.changeState('normal');
-                default: this.reset();
+                case 'get_hungry': enveroupmentThis.changeState('hungry');
+                    break;
+                case 'get_up': enveroupmentThis.changeState('normal');
+                    break;
+                default: enveroupmentThis.reset();
             }
         }
         if (active == 'busy') {
             switch (event) {
-                case 'get_hungry': this.changeState('hungry');
-                case 'get_tired': this.changeState('sleeping');
-                default: this.reset();
+                case 'get_hungry':  enveroupmentThis.changeState('hungry');
+                    break;
+                case 'get_tired': enveroupmentThis.changeState('sleeping');
+                    break;
+                default: enveroupmentThis.reset();
             }
         }
         if ( active == 'normal' ) {
             switch (event) {
-                case 'study': this.changeState('busy');
-                default: this.reset();
+                case 'study': enveroupmentThis.changeState('busy');
+                    break;
+                default: enveroupmentThis.reset();
             }
         }
         if ( active == 'busy') {
-            switch (event) {
-                case 'get_hungry': this.changeState('hungry');
-                default: this.reset();
+            switch (event) { 
+                case 'get_hungry': changeState('hungry');
+                    break;
+                default: enveroupmentThis.reset();
             }
         }
         if ( active == 'hungry') {
             switch (event) {
-                case 'eat': this.changeState('normal');   
-                default: this.reset();
+                case 'eat': enveroupmentThis.changeState('normal');
+                    break;
+                default: enveroupmentThis.reset();
             }
         }    
     }
@@ -72,7 +91,7 @@ class FSM {
      * Resets FSM state to initial.
      */
     reset() {
-        active = FSM.config[initial];
+        active = 'normal';
     }
 
     /**
@@ -81,7 +100,21 @@ class FSM {
      * @param event
      * @returns {Array}
      */
-    getStates(event) {}
+    getStates(event) {
+        let output = [];
+        switch (event) {
+            case 'get_hungry': output = ['busy','sleeping'];
+                break;
+            case 'eat': output = ['normal'];
+                break;
+            case 'study': output = ['normal'];
+                break;
+            case 'get_tired': output = ['busy'];
+                break;
+            default:  [];
+        }
+        return (event != undefined) ? output : ['normal', 'busy', 'hungry', 'sleeping'];
+    }
 
     /**
      * Goes back to previous state.
