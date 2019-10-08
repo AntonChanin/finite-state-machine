@@ -3,30 +3,77 @@ class FSM {
      * Creates new FSM instance.
      * @param config
      */
-    constructor(config) {}
+    constructor(config) {
+        var active = 'normal';
+    }
 
     /**
      * Returns active state.
      * @returns {String}
      */
-    getState() {}
+    getState() {
+        return active;
+    }
 
     /**
      * Goes to specified state.
      * @param state
      */
-    changeState(state) {}
+    changeState(state) {
+        switch (state) {
+            case 'busy': active = 'busy';
+            case 'sleeping': active ='sleeping';
+            case 'normal': active = 'normal';
+            case 'hungry': active = 'hungry';
+            default: reset();
+        }
+    }
 
     /**
      * Changes state according to event transition rules.
      * @param event
      */
-    trigger(event) {}
+    trigger(event) {
+        if ( active == 'sleeping' ) {
+            switch (event) {
+                case 'get_hungry': this.changeState('hungry');
+                case 'get_up': this.changeState('normal');
+                default: this.reset();
+            }
+        }
+        if (active == 'busy') {
+            switch (event) {
+                case 'get_hungry': this.changeState('hungry');
+                case 'get_tired': this.changeState('sleeping');
+                default: this.reset();
+            }
+        }
+        if ( active == 'normal' ) {
+            switch (event) {
+                case 'study': this.changeState('busy');
+                default: this.reset();
+            }
+        }
+        if ( active == 'busy') {
+            switch (event) {
+                case 'get_hungry': this.changeState('hungry');
+                default: this.reset();
+            }
+        }
+        if ( active == 'hungry') {
+            switch (event) {
+                case 'eat': this.changeState('normal');   
+                default: this.reset();
+            }
+        }    
+    }
 
     /**
      * Resets FSM state to initial.
      */
-    reset() {}
+    reset() {
+        active = FSM.config[initial];
+    }
 
     /**
      * Returns an array of states for which there are specified event transition rules.
