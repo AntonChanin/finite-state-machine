@@ -1,18 +1,20 @@
 var active = 'normal';
 var thisConfig = undefined;
+var enveroupmentThis = undefined;
 class FSM { 
     /**
      * Creates new FSM instance.
      * @param config
      */
     
-        constructor(config) {
-            //var active = 'normal';throw(Error)
-            thisConfig = config;
-            if (thisConfig == undefined) {
-                throw new Error;
-            }
-        } 
+    constructor(config) {
+        //var active = 'normal';throw(Error)
+        thisConfig = config;
+        enveroupmentThis = this.changeState;
+        if (thisConfig == undefined) {
+            throw new Error;
+        }
+    } 
     /**
      * Returns active state.
      * @returns {String}
@@ -42,49 +44,63 @@ class FSM {
     /**
      * Changes state according to event transition rules.
      * @param event
-     */
-                 
+     */        
     trigger(event) {
-        let enveroupmentThis = this;
-        if ( active == 'sleeping' ) {
+        let changeState = true;
+        let eventSuccess = false;
+        if (active == 'hungry' && changeState != false) {
             switch (event) {
-                case 'get_hungry': enveroupmentThis.changeState('hungry');
+                case 'eat': this.changeState('normal');
                     break;
-                case 'get_up': enveroupmentThis.changeState('normal');
+                case 'study': this.changeState('normal');
+                    this.changeState('busy');
                     break;
-                default: enveroupmentThis.reset();
+                case 'get_tired': this.changeState('normal');
+                    this.changeState('busy');
+                    this.changeState('sleeping');
+                    break;
+                default: this.reset();
             }
-        }
-        if (active == 'busy') {
+            changeState = false;
+        }   
+        if (active == 'normal' && changeState != false) {
             switch (event) {
-                case 'get_hungry':  enveroupmentThis.changeState('hungry');
+                case 'study': this.changeState('busy');
                     break;
-                case 'get_tired': enveroupmentThis.changeState('sleeping');
+                case 'get_tired': this.changeState('busy');
+                    this.changeState('sleeping');
                     break;
-                default: enveroupmentThis.reset();
+                case 'get_hungry': this.changeState('busy');
+                    this.changeState('hungry');
+                    break;
+                default: this.reset();
             }
+            changeState = false;
         }
-        if ( active == 'normal' ) {
+        if (active == 'sleeping' && changeState != false) {
             switch (event) {
-                case 'study': enveroupmentThis.changeState('busy');
+                case 'get_hungry': this.changeState('hungry');
                     break;
-                default: enveroupmentThis.reset();
-            }
-        }
-        if ( active == 'busy') {
-            switch (event) { 
-                case 'get_hungry': changeState('hungry');
+                case 'get_up': this.changeState('normal');
                     break;
-                default: enveroupmentThis.reset();
-            }
+                case 'study': this.changeState('normal');
+                    this.changeState('busy');
+                    break;
+                default: this.reset(); 
+            } 
+            changeState = false;
         }
-        if ( active == 'hungry') {
+        if (active == 'busy' && changeState != false) {
             switch (event) {
-                case 'eat': enveroupmentThis.changeState('normal');
+                case 'get_hungry': this.changeState('hungry');
                     break;
-                default: enveroupmentThis.reset();
+                case 'get_tired': this.changeState('sleeping');
+                    break;
+                default: this.reset();
             }
-        }    
+            changeState = false;
+        }
+        
     }
 
     /**
