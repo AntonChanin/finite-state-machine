@@ -11,6 +11,8 @@ class FSM {
         this.thisConfig = config;
         this.active = 'normal';
         this.history = ['normal'];
+        this.flagError = false;
+        this.events = ['eat', 'study', 'get_tired', 'get_hungry'];
         this.i = 0;
         
         if (this.thisConfig == undefined) {
@@ -59,7 +61,14 @@ class FSM {
         let history = this.history;
         let active = this.active;
         historyChange = false;
-        if (event != 'hmmm... exception?') {
+        if (!this.events.includes(event) || this.flagError) {
+            changeState = false;
+            eventSuccess = true;
+            this.flagError = true;
+            throw new Error('!ERROR!');
+            return;
+        }
+        if ( !this.flagError ) {
             if (active == 'hungry' && changeState != false) {
                 switch (event) {
                     case 'eat': this.changeState('normal');
@@ -112,9 +121,6 @@ class FSM {
                 }
                 changeState = false;
             }
-        } else {
-            changeState = false;
-            eventSuccess = true;
         }
     }
 
